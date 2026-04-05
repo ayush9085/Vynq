@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Personality Assessment - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-subtle" style="min-height: 100vh; padding: 3rem 1rem;">
+    <div class="container" style="max-width: 42rem;">
+        <!-- Progress Bar -->
+        <div style="margin-bottom: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h1 style="font-size: 1.875rem; margin: 0;">Your Personality Assessment</h1>
+                <span style="font-size: 1.125rem; font-weight: 600; color: var(--color-gray-600);">
+                    <span id="current-question">1</span> / <span id="total-questions">20</span>
+                </span>
+            </div>
+            <div class="progress-bar" style="margin-bottom: 1rem;">
+                <div id="progress-bar" class="progress-bar-fill" style="width: 5%;"></div>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--color-gray-600); margin: 0;">
+                This assessment helps us understand your personality and find compatible matches. It takes about 10 minutes.
+            </p>
+        </div>
+
+        <!-- Assessment Container -->
+        <div id="assessment-container" class="card" style="margin-bottom: 2rem;">
+            <div id="loading" style="text-align: center; padding: 3rem 0;">
+                <div class="spinner"></div>
+                <p style="color: var(--color-gray-600); margin-top: 1rem;">Loading questions...</p>
+            </div>
+
+            <form id="assessment-form" style="display: none;">
+                <!-- Question will be populated here -->
+                <div id="question-content"></div>
+
+                <!-- Navigation Buttons -->
+                <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                    <button type="button" id="prev-btn" class="btn btn-secondary" style="display: none;">
+                        ← Previous
+                    </button>
+                    <button type="button" id="next-btn" class="btn btn-primary">
+                        Next →
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section (hidden initially) -->
+        <div id="results-section" style="display: none;">
+            <div class="card" style="margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Your Personality Profile</h2>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <!-- Trait Result 1 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 600; color: var(--color-gray-900); margin: 0;">Social Energy</h3>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-lavender);" id="trait-1-score">50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="trait-1-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">Introverted ← Balanced → Extraverted</p>
+                    </div>
+
+                    <!-- Trait Result 2 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 600; color: var(--color-gray-900); margin: 0;">Information Processing</h3>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-lavender);" id="trait-2-score">50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="trait-2-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">Practical ← Balanced → Abstract</p>
+                    </div>
+
+                    <!-- Trait Result 3 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 600; color: var(--color-gray-900); margin: 0;">Decision Making</h3>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-lavender);" id="trait-3-score">50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="trait-3-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">Logic ← Balanced → Empathy</p>
+                    </div>
+
+                    <!-- Trait Result 4 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 600; color: var(--color-gray-900); margin: 0;">Life Approach</h3>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-lavender);" id="trait-4-score">50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="trait-4-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">Flexible ← Balanced → Structured</p>
+                    </div>
+
+                    <!-- Trait Result 5 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h3 style="font-weight: 600; color: var(--color-gray-900); margin: 0;">Communication Style</h3>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--color-lavender);" id="trait-5-score">50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="trait-5-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--color-gray-600); margin-top: 0.25rem;">Diplomatic ← Balanced → Direct</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background-color: #f0ecff; border-radius: 0.5rem;">
+                    <p style="font-size: 0.875rem; color: var(--color-gray-700); margin: 0;">
+                        <strong>Confidence Score:</strong> <span id="confidence-score">87%</span>
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="/matches" class="btn btn-primary" style="padding: 1rem 2rem;">Find My Matches</a>
+                <a href="/profile" class="btn btn-secondary" style="padding: 1rem 2rem;">View Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/onboarding.js') }}"></script>
+{% endblock %}

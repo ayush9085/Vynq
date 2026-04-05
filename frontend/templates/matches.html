@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Find Matches - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-subtle" style="min-height: 100vh; padding: 3rem 1rem;">
+    <div class="container" style="max-width: 56rem;">
+        <h1 style="font-size: 2.25rem; text-align: center; margin-bottom: 1rem; color: var(--color-gradient);">Your Compatible Matches</h1>
+        <p style="text-align: center; color: var(--color-gray-600); margin-bottom: 3rem;">Ranked by psychological compatibility</p>
+
+        <!-- Filters -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <div class="grid grid-3" style="gap: 1rem;">
+                <input type="text" placeholder="Search by name..." style="padding: 0.5rem 1rem; border-radius: 0.5rem;" />
+                <select style="padding: 0.5rem 1rem; border-radius: 0.5rem;">
+                    <option>Sort: Highest Compatibility</option>
+                    <option>Sort: Newest First</option>
+                </select>
+                <button class="btn btn-secondary">Filter Options</button>
+            </div>
+        </div>
+
+        <!-- Matches Grid -->
+        <div id="matches-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Loading State -->
+            <div id="loading" style="text-align: center; padding: 3rem 0;">
+                <div class="spinner"></div>
+                <p style="color: var(--color-gray-600); margin-top: 1rem;">Loading your matches...</p>
+            </div>
+
+            <!-- Matches will be populated here -->
+        </div>
+
+        <!-- No Matches State -->
+        <div id="no-matches" style="display: none; text-align: center; padding: 5rem 1rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">No matches yet</h2>
+            <p style="color: var(--color-gray-600); margin-bottom: 1.5rem;">Complete your assessment to get started!</p>
+            <a href="/onboarding" class="btn btn-primary">Start Assessment</a>
+        </div>
+
+        <!-- Empty Assessment State -->
+        <div id="no-assessment" style="display: none; text-align: center; padding: 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+            <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">Complete Your Assessment First</h2>
+            <p style="color: var(--color-gray-600); margin-bottom: 1.5rem;">We need to understand your personality to find your best matches.</p>
+            <a href="/onboarding" class="btn btn-primary">Start Assessment</a>
+        </div>
+    </div>
+</div>
+
+<!-- Match Card Template -->
+<template id="match-card-template">
+    <div class="card" style="display: flex; gap: 1.5rem;">
+        <!-- Profile Section -->
+        <div style="flex: 1;">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+                <div>
+                    <h3 style="font-size: 1.5rem; font-weight: bold; color: var(--color-gray-900); margin: 0;" data-name>Alex</h3>
+                    <p style="color: var(--color-gray-600); margin: 0;" data-age-location>26, San Francisco</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="match-score" style="font-size: 2rem; margin: 0;" data-score>87%</div>
+                    <p style="font-size: 0.875rem; color: var(--color-gray-600); margin: 0;">Compatibility</p>
+                </div>
+            </div>
+
+            <!-- Compatibility Explanation -->
+            <div style="margin-bottom: 1rem; padding: 1rem; background: linear-gradient(135deg, #fffbf0 0%, #f9f7ff 100%); border-radius: 0.5rem;">
+                <p style="font-size: 0.875rem; font-weight: 600; color: var(--color-gray-700); margin-bottom: 0.5rem; margin-top: 0;">Why you'd click:</p>
+                <p style="font-size: 0.875rem; color: var(--color-gray-600); margin: 0;" data-explanation>Strong emotional alignment and similar communication preferences</p>
+            </div>
+
+            <!-- Trait Badges -->
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="trait-badge trait-badge-gold" data-trait-1>Empathetic</span>
+                <span class="trait-badge trait-badge-lavender" data-trait-2>Spontaneous</span>
+                <span class="trait-badge trait-badge-gold" data-trait-3>Direct</span>
+            </div>
+
+            <!-- Bio -->
+            <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem;" data-bio>
+                Love hiking, yoga, and trying new restaurants. Looking for someone genuine and up for adventure.
+            </p>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn btn-primary" style="flex: 1;">Send Message</button>
+                <button class="btn btn-secondary" style="flex: 1;">View Profile</button>
+            </div>
+        </div>
+
+        <!-- Avatar Placeholder -->
+        <div style="display: none; flex-direction: column; align-items: center; gap: 1rem;">
+            <div style="width: 6rem; height: 8rem; background: linear-gradient(135deg, #fbb040 0%, #9555ff 100%); border-radius: 1rem;"></div>
+            <button style="font-size: 0.875rem; color: var(--color-gray-600); background: none; border: none; cursor: pointer;">↓ Save</button>
+        </div>
+    </div>
+</template>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/matches.js') }}"></script>
+{% endblock %}
