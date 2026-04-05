@@ -61,19 +61,3 @@ class CompatibilityMatch(Base):
     compatibility_score = Column(Float, nullable=False)  # 0-100
     explanation = Column(Text, nullable=True)
     computed_at = Column(DateTime, default=datetime.utcnow)
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    question_id = Column(Integer, ForeignKey("assessment_questions.id"), nullable=False)
-    response_text = Column(Text, nullable=False)
-    response_score = Column(Float, nullable=True)  # 0-1 score for this question
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class CompatibilityMatch(Base):
-    __tablename__ = "compatibility_matches"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id_1 = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    user_id_2 = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    compatibility_score = Column(Float, nullable=False)  # 0-100
-    explanation = Column(Text, nullable=True)
-    computed_at = Column(DateTime, default=datetime.utcnow)

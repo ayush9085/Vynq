@@ -185,3 +185,6 @@ TRAIT_DEFINITIONS = {
 
 # Number of questions to show user
 QUESTIONS_PER_SESSION = 20
+
+# Create QUESTIONS dictionary for easier access by ID
+QUESTIONS = {str(q["id"]): q for q in ASSESSMENT_QUESTIONS}
