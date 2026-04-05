@@ -2,9 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from routes import auth, onboarding, matches, profiles
+from database.connection import init_db
 
 # Load environment variables
 load_dotenv()
+
+# Initialize database
+init_db()
 
 # Initialize FastAPI
 app = FastAPI(
@@ -17,8 +22,10 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "http://localhost:8501",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://127.0.0.1:8501",
 ]
 
 app.add_middleware(
@@ -28,6 +35,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include route modules
+app.include_router(auth.router, prefix="/api")
+app.include_router(onboarding.router, prefix="/api")
+app.include_router(matches.router, prefix="/api")
+app.include_router(profiles.router, prefix="/api")
 
 # Health check endpoint
 @app.get("/health")
