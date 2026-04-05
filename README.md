@@ -531,7 +531,9 @@ git push origin feature/my-feature
 
 ## License
 
-TBD
+MIT License — See [LICENSE](LICENSE) for details.
+
+Free to use, modify, and distribute for personal and commercial projects.
 
 ---
 
