@@ -1,7 +1,4 @@
 class AuthResponse {
-  final String accessToken;
-  final String userId;
-
   AuthResponse({
     required this.accessToken,
     required this.userId,
@@ -13,22 +10,11 @@ class AuthResponse {
       userId: json['user_id'],
     );
   }
+  final String accessToken;
+  final String userId;
 }
 
 class User {
-  final String id;
-  final String email;
-  final String firstName;
-  final String lastName;
-  final int? age;
-  final String? gender;
-  final List<String> interests;
-  final String? bio;
-  final String? location;
-  final String? mbti;
-  final double? mbtiConfidence;
-  final String? createdAt;
-
   User({
     required this.id,
     required this.email,
@@ -60,13 +46,21 @@ class User {
       createdAt: json['created_at'],
     );
   }
+  final String id;
+  final String email;
+  final String firstName;
+  final String lastName;
+  final int? age;
+  final String? gender;
+  final List<String> interests;
+  final String? bio;
+  final String? location;
+  final String? mbti;
+  final double? mbtiConfidence;
+  final String? createdAt;
 }
 
 class MBTIResult {
-  final String mbtiType;
-  final double confidence;
-  final String message;
-
   MBTIResult({
     required this.mbtiType,
     required this.confidence,
@@ -80,13 +74,12 @@ class MBTIResult {
       message: json['message'] ?? 'MBTI prediction complete',
     );
   }
+  final String mbtiType;
+  final double confidence;
+  final String message;
 }
 
 class AssessmentQuestion {
-  final int id;
-  final String text;
-  final String category;
-
   AssessmentQuestion({
     required this.id,
     required this.text,
@@ -100,19 +93,12 @@ class AssessmentQuestion {
       category: json['category'],
     );
   }
+  final int id;
+  final String text;
+  final String category;
 }
 
 class Match {
-  final String matchUserId;
-  final String name;
-  final int? age;
-  final String? gender;
-  final String mbti;
-  final List<String> interests;
-  final double compatibilityScore;
-  final List<String> matchReasons;
-  final String? userBio;
-
   Match({
     required this.matchUserId,
     required this.name,
@@ -138,13 +124,18 @@ class Match {
       userBio: json['user_bio'],
     );
   }
+  final String matchUserId;
+  final String name;
+  final int? age;
+  final String? gender;
+  final String mbti;
+  final List<String> interests;
+  final double compatibilityScore;
+  final List<String> matchReasons;
+  final String? userBio;
 }
 
 class ErrorResponse {
-  final String error;
-  final String? detail;
-  final int statusCode;
-
   ErrorResponse({
     required this.error,
     this.detail,
@@ -158,4 +149,7 @@ class ErrorResponse {
       statusCode: json['status_code'] ?? 500,
     );
   }
+  final String error;
+  final String? detail;
+  final int statusCode;
 }

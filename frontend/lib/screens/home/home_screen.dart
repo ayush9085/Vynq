@@ -12,14 +12,40 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _apiService = ApiService();
+  bool _isOnboardingCompleted = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkOnboarding();
+  }
+
+  Future<void> _checkOnboarding() async {
+    final isCompleted = await ApiService.isOnboardingCompleted();
+    if (mounted) {
+      setState(() {
+        _isOnboardingCompleted = isCompleted;
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation(VynkColors.primary),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: VynkColors.lavender,
       appBar: AppBar(
-        title: const Text('VYNK 💜',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        title: const Text('VYNK 👀'),
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
@@ -35,284 +61,93 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header card
+            // Welcome section
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: VynkColors.deepLavenderGradient,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: VynkColors.lavenderDeep.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+                gradient: VynkColors.lavenderGradient,
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ready to Vynk? 💜',
+                    'Welcome to VYNK 👀',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                          color: VynkColors.primary,
+                          fontWeight: FontWeight.w700,
                         ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Text(
-                    'Discover people who match your personality & vibe',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.9),
+                    'Let\'s find your perfect match',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: VynkColors.textLight,
                         ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 32),
+            // If onboarding not completed, show prompt
+            if (!_isOnboardingCompleted)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: VynkColors.primary, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  color: VynkColors.lavenderAccent.withValues(alpha: 0.3),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      '⚠️ Complete Your Profile First',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: VynkColors.primary,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Answer a few quick questions about yourself to get personalized matches!',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: () => context.push('/onboarding'),
+                      child: const Text('Start Onboarding'),
+                    ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 32),
+            // Quick actions section
             Text(
-              'Your Stats',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+              'Discover Matches',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                      context, '💕', 'Likes', '0', VynkColors.like),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                      context, '⭐', 'Super Likes', '0', VynkColors.superLike),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                      context, '👁️', 'Views', '0', VynkColors.primary),
-                ),
-              ],
+            ElevatedButton.icon(
+              onPressed: _isOnboardingCompleted
+                  ? () => context.push('/home/matches')
+                  : null,
+              icon: const Icon(Icons.favorite),
+              label: const Text('View Matches'),
             ),
-            const SizedBox(height: 32),
-            GestureDetector(
-              onTap: () => context.push('/home/matches'),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      VynkColors.primary,
-                      VynkColors.primary.withValues(alpha: 0.8),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: VynkColors.primary.withValues(alpha: 0.4),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Discover Matches',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Swipe left or right to find your match',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                  ),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward,
-                        color: Colors.white, size: 28),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => context.push('/home/profile'),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: VynkColors.lavenderDeep.withValues(alpha: 0.3),
-                          width: 2,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.person,
-                              size: 32, color: VynkColors.lavenderDeep),
-                          const SizedBox(height: 8),
-                          Text(
-                            'My Profile',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: VynkColors.lavenderDeep.withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(Icons.favorite,
-                            size: 32, color: VynkColors.like),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Likes',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: VynkColors.lavenderDeep.withValues(alpha: 0.3),
-                        width: 2,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(Icons.star,
-                            size: 32, color: VynkColors.superLike),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Top Matches',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: VynkColors.superLike.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: VynkColors.superLike.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.lightbulb, color: VynkColors.superLike),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Pro Tips',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    '✓ Complete your profile for better matches\n✓ Super Like your favorites (limited daily)\n✓ Check your profile regularly',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => context.push('/home/profile'),
+              icon: const Icon(Icons.person),
+              label: const Text('My Profile'),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard(
-    BuildContext context,
-    String emoji,
-    String label,
-    String value,
-    Color color,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 2),
-        boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.1), blurRadius: 10)
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 28)),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                ?.copyWith(fontWeight: FontWeight.bold, color: color),
-          ),
-          const SizedBox(height: 4),
-          Text(label, style: Theme.of(context).textTheme.bodySmall),
-        ],
       ),
     );
   }
