@@ -1,0 +1,71 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+.env
+.env.local
+
+# Build outputs
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+.dart_tool/
+.flutter-plugins-dependencies
+pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Python
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Documentation
+README.md
+docs/
+
+# Project specific
+TODO.md
+SETUP_GUIDE.md
+FLUTTER_QUICK_START.md
+IMPLEMENTATION_COMPLETE.md
+PROJECT_SETUP.md
+Procfile
+runtime.txt
+
+# Android/iOS
+android/
+ios/
+*.iml
