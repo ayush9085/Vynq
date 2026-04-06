@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Flutter build artifacts
+build/
+.dart_tool/
+.flutter-plugins-dependencies
+pubspec.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Temporary
+*.tmp
+*.temp
+
+# Environment
+.env
+.env.local
+
+# Other platforms
+android/
+ios/
+macos/
+windows/
+linux/
+
+# Documentation
+README.md
+docs/
+TODO.md
