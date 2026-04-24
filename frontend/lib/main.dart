@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
+
 import 'router.dart';
+import 'theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const VynkApp());
 }
 
@@ -12,10 +14,10 @@ class VynkApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'VYNK 👀',
-      theme: VynkTheme.light(),
-      routerConfig: router,
+      title: 'Vynk',
       debugShowCheckedModeBanner: false,
+      theme: buildTheme(),
+      routerConfig: router,
     );
   }
 }
