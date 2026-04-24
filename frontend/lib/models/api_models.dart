@@ -1,155 +1,100 @@
 class AuthResponse {
-  AuthResponse({
-    required this.accessToken,
-    required this.userId,
-  });
+  final String accessToken;
+  final String userId;
+
+  AuthResponse({required this.accessToken, required this.userId});
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      accessToken: json['access_token'],
-      userId: json['user_id'],
+      accessToken: json['access_token'] as String,
+      userId: json['user_id'] as String,
     );
   }
-  final String accessToken;
-  final String userId;
 }
 
-class User {
-  User({
-    required this.id,
-    required this.email,
-    required this.firstName,
-    required this.lastName,
-    this.age,
-    this.gender,
-    this.interests = const [],
-    this.bio,
-    this.location,
-    this.mbti,
-    this.mbtiConfidence,
-    this.createdAt,
+class MbtiResult {
+  final String mbti;
+  final double confidence;
+  final String message;
+
+  MbtiResult({
+    required this.mbti,
+    required this.confidence,
+    required this.message,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['_id'] ?? json['id'],
-      email: json['email'],
-      firstName: json['first_name'],
-      lastName: json['last_name'],
-      age: json['age'],
-      gender: json['gender'],
-      interests: List<String>.from(json['interests'] ?? []),
-      bio: json['bio'],
-      location: json['location'],
-      mbti: json['mbti'],
-      mbtiConfidence: (json['mbti_confidence'] ?? 0).toDouble(),
-      createdAt: json['created_at'],
+  factory MbtiResult.fromJson(Map<String, dynamic> json) {
+    return MbtiResult(
+      mbti: json['mbti'] as String,
+      confidence: (json['confidence'] as num).toDouble(),
+      message: json['message'] as String,
     );
   }
+}
+
+class MatchItem {
+  final String matchUserId;
+  final String name;
+  final String mbti;
+  final double compatibilityScore;
+  final List<String> sharedInterests;
+  final String explanation;
+  final List<String> reasons;
+
+  MatchItem({
+    required this.matchUserId,
+    required this.name,
+    required this.mbti,
+    required this.compatibilityScore,
+    required this.sharedInterests,
+    required this.explanation,
+    required this.reasons,
+  });
+
+  factory MatchItem.fromJson(Map<String, dynamic> json) {
+    return MatchItem(
+      matchUserId: json['match_user_id'] as String,
+      name: json['name'] as String,
+      mbti: json['mbti'] as String,
+      compatibilityScore: (json['compatibility_score'] as num).toDouble(),
+      sharedInterests: List<String>.from(json['shared_interests'] as List),
+      explanation: json['explanation'] as String,
+      reasons: List<String>.from(json['reasons'] as List),
+    );
+  }
+}
+
+class UserProfile {
   final String id;
-  final String email;
   final String firstName;
   final String lastName;
   final int? age;
   final String? gender;
   final List<String> interests;
-  final String? bio;
-  final String? location;
   final String? mbti;
-  final double? mbtiConfidence;
-  final String? createdAt;
-}
+  final double? confidence;
 
-class MBTIResult {
-  MBTIResult({
-    required this.mbtiType,
-    required this.confidence,
-    required this.message,
-  });
-
-  factory MBTIResult.fromJson(Map<String, dynamic> json) {
-    return MBTIResult(
-      mbtiType: json['mbti'],
-      confidence: (json['confidence'] ?? 0).toDouble(),
-      message: json['message'] ?? 'MBTI prediction complete',
-    );
-  }
-  final String mbtiType;
-  final double confidence;
-  final String message;
-}
-
-class AssessmentQuestion {
-  AssessmentQuestion({
+  UserProfile({
     required this.id,
-    required this.text,
-    required this.category,
-  });
-
-  factory AssessmentQuestion.fromJson(Map<String, dynamic> json) {
-    return AssessmentQuestion(
-      id: json['id'],
-      text: json['text'],
-      category: json['category'],
-    );
-  }
-  final int id;
-  final String text;
-  final String category;
-}
-
-class Match {
-  Match({
-    required this.matchUserId,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     this.age,
     this.gender,
-    required this.mbti,
-    this.interests = const [],
-    required this.compatibilityScore,
-    this.matchReasons = const [],
-    this.userBio,
+    required this.interests,
+    this.mbti,
+    this.confidence,
   });
 
-  factory Match.fromJson(Map<String, dynamic> json) {
-    return Match(
-      matchUserId: json['match_user_id'],
-      name: json['name'],
-      age: json['age'],
-      gender: json['gender'],
-      mbti: json['mbti'],
-      interests: List<String>.from(json['interests'] ?? []),
-      compatibilityScore: (json['compatibility_score'] ?? 0).toDouble(),
-      matchReasons: List<String>.from(json['match_reasons'] ?? []),
-      userBio: json['user_bio'],
+  factory UserProfile.fromJson(Map<String, dynamic> json) {
+    return UserProfile(
+      id: json['id'] as String,
+      firstName: json['first_name'] as String,
+      lastName: json['last_name'] as String,
+      age: json['age'] as int?,
+      gender: json['gender'] as String?,
+      interests: List<String>.from(json['interests'] as List? ?? []),
+      mbti: json['mbti'] as String?,
+      confidence: (json['mbti_confidence'] as num?)?.toDouble(),
     );
   }
-  final String matchUserId;
-  final String name;
-  final int? age;
-  final String? gender;
-  final String mbti;
-  final List<String> interests;
-  final double compatibilityScore;
-  final List<String> matchReasons;
-  final String? userBio;
-}
-
-class ErrorResponse {
-  ErrorResponse({
-    required this.error,
-    this.detail,
-    required this.statusCode,
-  });
-
-  factory ErrorResponse.fromJson(Map<String, dynamic> json) {
-    return ErrorResponse(
-      error: json['error'] ?? 'Unknown error',
-      detail: json['detail'],
-      statusCode: json['status_code'] ?? 500,
-    );
-  }
-  final String error;
-  final String? detail;
-  final int statusCode;
 }
