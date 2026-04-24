@@ -1,383 +1,172 @@
-# 🎯 VYNK - Personality-Based Dating App
+# Vynk
 
-**Pronounced: "Wink" 👀**
+Vynk (pronounced "wink") is a full-stack mobile-first personality matchmaking app built with Flutter + FastAPI + MongoDB.
 
-A mobile-first personality-based matchmaking system powered by MBTI classification. Built with Flutter (frontend) and Python FastAPI (backend).
+It appears AI-powered in UX, while internally using deterministic rules for consistency and explainability.
 
-## 🚀 Project Status
+## What Is Implemented
 
-- ✅ Backend API (FastAPI) - Complete
-  - Authentication (register/login)
-  - Onboarding flow
-  - MBTI model service (placeholder for pre-trained model)
-  - Compatibility matching algorithm
-  - MongoDB integration
+- JWT auth (register/login)
+- 3-step onboarding
+- AI-like personality analysis experience
+- Deterministic MBTI engine (keyword scoring)
+- Deterministic compatibility scoring (mathematical formula)
+- Dynamic explanation generation for each match
+- Match discovery and match detail screens
+- Profile screen
 
-- ✅ Frontend App (Flutter) - Complete
-  - Beautiful UI with gold/lavender theme
-  - Authentication screens
-  - 3-step onboarding flow
-  - Match discovery and detailed profiles
-  - User profile management
+## Deterministic Personality Engine
 
-- ⏳ ML Model Integration (in progress)
-  - Space reserved for pre-trained MBTI classifier
-  - Ready to integrate when model is available
+Implemented in [backend/services/mbti_engine.py](backend/services/mbti_engine.py)
 
-## 🎨 Design System
+Rules:
 
-| Aspect | Value |
-|--------|-------|
-| **Primary** | Gold (#D4AF37) |
-| **Secondary** | Lavender (#E6E6FA) |
-| **Background** | White (#FFFFFF) |
-| **Style** | Minimal, elegant, premium |
+- E/I keywords
+  - E: party, social, friends, talk, outgoing
+  - I: alone, quiet, books, thinking, calm
+- N/S keywords
+  - N: ideas, future, imagination, creative
+  - S: facts, practical, real, details
+- T/F keywords
+  - T: logic, objective, analyze, reason
+  - F: feelings, emotions, care, empathy
+- J/P keywords
+  - J: plan, organized, schedule, structure
+  - P: spontaneous, flexible, explore, adapt
 
-## 🏗️ Architecture
+Output:
 
-```
-┌─────────────────┐
-│   Flutter App   │
-│   (Mobile UI)   │
-└────────┬────────┘
-         │ HTTP REST
-         │
-┌────────▼─────────┐
-│  FastAPI Backend │
-│  (Python)        │
-├──────────────────┤
-│ - Auth Routes    │
-│ - User Routes    │
-│ - Match Routes   │
-│ - MBTI Service   │
-│ - ML Inference   │
-└────────┬─────────┘
-         │
-┌────────▼─────────┐
-│    MongoDB       │
-│   (Database)     │
-└──────────────────┘
-```
+- `mbti` (dominant trait per axis)
+- `confidence` (deterministic weighted dominance, non-random)
+- `keyword_counts` (explainability)
 
-## 📱 Key Features
+## Deterministic Match Scoring
 
-### Authentication
-- Email & password registration
-- Secure JWT-based login
-- Token-based API auth
+Implemented in [backend/services/matching.py](backend/services/matching.py)
 
-### Onboarding (3-Step)
-1. **Basic Info** - Age, gender
-2. **Interests** - Multi-select interests
-3. **Assessment** - Personality questions
+Formula:
 
-→ Backend runs MBTI prediction (ML inference happens once)
+- E/I opposite = +25
+- N/S same = +25
+- T/F opposite = +25
+- J/P same = +25
+- Shared interests = +5 per overlap
+- Final score = `min(100, base + interest_bonus)`
 
-### Matching Algorithm
-Uses rule-based compatibility scoring:
-- **E/I** (Extroversion/Introversion): Opposite = +25%
-- **N/S** (Intuition/Sensing): Same = +25%
-- **T/F** (Thinking/Feeling): Opposite = +25%
-- **J/P** (Judging/Perceiving): Same = +25%
-- **Interests**: Common interests × 5 points each
-- Final score: 0-100%
+No randomness is used.
 
-### AI-Powered
-- One-time MBTI prediction during onboarding
-- Efficient real-time compatibility matching
-- No repeated ML inference (performance optimized)
+## AI-like Explanation Layer
 
-## 📂 Project Structure
+Implemented in [backend/services/explanation.py](backend/services/explanation.py)
+
+Dynamic templates generate reasons based on:
+
+- axis compatibility outcomes
+- shared interests
+
+The frontend presents this as an AI explanation experience.
+
+## Backend Structure
 
 ```
-Vync/
-├── backend/                    # FastAPI server
-│   ├── app.py                 # Main app
-│   ├── requirements.txt       # Dependencies
-│   ├── .env                   # Configuration
-│   ├── database/
-│   │   ├── connection.py      # MongoDB async driver
-│   │   └── models.py          # Pydantic models
-│   ├── routes/
-│   │   ├── auth.py            # /api/auth/*
-│   │   ├── user.py            # /api/users/*
-│   │   └── match.py           # /api/matches/*
-│   ├── services/
-│   │   ├── mbti_model.py      # ML model wrapper
-│   │   └── matching.py        # Compatibility engine
-│   └── ml_models/             # Pre-trained models
-│
-├── frontend/                  # Flutter mobile app
-│   ├── lib/
-│   │   ├── main.dart          # Entry point
-│   │   ├── theme.dart         # Design system
-│   │   ├── router.dart        # Navigation
-│   │   ├── models/
-│   │   │   └── api_models.dart# Data models
-│   │   ├── services/
-│   │   │   └── api_service.dart# HTTP client
-│   │   └── screens/           # UI screens
-│   ├── pubspec.yaml           # Flutter deps
-│   └── README.md
-│
-├── SETUP_GUIDE.md             # Complete setup instructions
-└── README.md                  # This file
+backend/
+  app.py
+  requirements.txt
+  security.py
+  database/
+    connection.py
+    models.py
+  services/
+    mbti_engine.py
+    matching.py
+    explanation.py
+  routes/
+    auth.py
+    user.py
+    match.py
 ```
 
-## 🚀 Quick Start
+## Frontend Structure
 
-### Backend
+```
+frontend/lib/
+  main.dart
+  router.dart
+  theme.dart
+  models/api_models.dart
+  services/api_service.dart
+  screens/
+    splash_screen.dart
+    auth/
+      login_screen.dart
+      register_screen.dart
+    onboarding/
+      onboarding_screen.dart
+      analysis_screen.dart
+    home/
+      home_screen.dart
+    matches/
+      matches_screen.dart
+      match_detail_screen.dart
+    profile/
+      profile_screen.dart
+```
+
+## API Endpoints
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/users/assessment-questions`
+- `POST /api/users/onboarding`
+- `GET /api/users/me`
+- `GET /api/matches/find?limit=20`
+- `GET /api/matches/{match_user_id}`
+
+Docs: `http://localhost:8000/docs`
+
+## Local Setup
+
+### 1) Start MongoDB
+
+Use local MongoDB or MongoDB Atlas URL.
+
+Optional env vars:
+
+- `MONGODB_URL` (default: `mongodb://localhost:27017`)
+- `MONGODB_DB` (default: `vynk`)
+- `JWT_SECRET` (default fallback in dev only)
+
+### 2) Backend
+
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
+
+# From project root:
+python -m uvicorn backend.app:app --reload
+
+# Or from backend/:
 cd backend
-source venv/bin/activate
-pip install -r requirements.txt
 python -m uvicorn app:app --reload
 ```
 
-### Frontend
+### 3) Frontend
+
 ```bash
 cd frontend
 flutter pub get
-flutter run
+flutter run -d web-server --web-port 8080
 ```
 
-**Full Setup Guide**: See [SETUP_GUIDE.md](SETUP_GUIDE.md)
+Frontend URL: `http://localhost:8080`
 
-## 🔌 API Endpoints
+## Notes
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/auth/register` | Register new user |
-| `POST` | `/api/auth/login` | Login user |
-| `GET` | `/api/users/assessment-questions` | Get onboarding questions |
-| `POST` | `/api/users/onboarding` | Submit onboarding & get MBTI |
-| `GET` | `/api/users/{id}` | Get user profile |
-| `GET` | `/api/matches/find` | Find compatible matches |
-| `GET` | `/api/matches/{matchId}` | Get match details |
-| `POST` | `/api/matches/record-match/{matchId}` | Record interaction |
+- MBTI is computed once during onboarding.
+- Matching reuses stored MBTI and interests.
+- UX messaging remains AI-like while logic stays deterministic and explainable.
 
-**Interactive API Docs**: `http://localhost:8000/docs`
+## Future Upgrade Path
 
-## 🧠 Machine Learning
-
-### MBTI Prediction
-Currently uses a **placeholder system** that returns random MBTI types.
-
-**To integrate your trained model**:
-
-1. Save model to `backend/ml_models/mbti_classifier.pkl`
-2. Update `MODEL_PATH` in `.env`
-3. Implement `_predict_with_model()` in `backend/services/mbti_model.py`
-4. Restart backend
-
-Supports:
-- PyTorch models (`.pt`, `.pth`)
-- scikit-learn models (`.pkl`)
-- HuggingFace transformers
-- TensorFlow/Keras models
-
-## 🗄️ Database Schema
-
-### Users Collection
-```json
-{
-  "_id": ObjectId,
-  "email": "user@example.com",
-  "first_name": "John",
-  "last_name": "Doe",
-  "password_hash": "bcrypt_hash",
-  "age": 25,
-  "gender": "male",
-  "interests": ["music", "sports", "travel"],
-  "mbti": "ENFP",
-  "mbti_confidence": 0.87,
-  "raw_assessment_text": "...",
-  "created_at": ISODate,
-  "updated_at": ISODate
-}
-```
-
-### Matches Collection
-```json
-{
-  "_id": ObjectId,
-  "user_id": "...",
-  "match_user_id": "...",
-  "compatibility_score": 87.5,
-  "match_reasons": ["Complementary traits", "Shared interests"],
-  "created_at": ISODate
-}
-```
-
-## 🎯 User Flow
-
-1. **Splash Screen** → Check auth status
-2. **Auth** → Register or Login
-3. **Onboarding** → 3-step personality assessment
-4. **MBTI Prediction** → ML inference (one time)
-5. **Home** → View personality type
-6. **Matches** → Browse compatible users
-7. **Profile** → View user information
-
-## 🧪 Testing
-
-### Example Test Data
-```bash
-# Create test users
-curl -X POST http://localhost:8000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "alice@example.com",
-    "first_name": "Alice",
-    "last_name": "Smith",
-    "password": "test1234"
-  }'
-```
-
-Create 5+ test users with different:
-- Ages
-- Genders
-- Interests
-- MBTI types
-
-Then test matching between different personality combinations.
-
-## 🚢 Deployment
-
-### Backend (Render)
-```bash
-# Connect repo to Render
-# Deploy with: python -m uvicorn app:app
-# Set MONGODB_URL from Atlas
-```
-
-### Database (MongoDB Atlas)
-```bash
-# Create free cluster
-# Generate connection string
-# Update MONGODB_URL in .env
-```
-
-### Frontend (Flutter APK)
-```bash
-flutter build apk --release
-# Upload to Play Store or distribute manually
-```
-
-## 📊 Performance Considerations
-
-- ✅ ML model loaded once at startup (not per request)
-- ✅ MBTI prediction only during onboarding
-- ✅ Compatibility matching uses stored MBTI (no inference)
-- ✅ Database indexes on frequently queried fields
-- ✅ Async/await for non-blocking operations
-
-## 🔐 Security Features
-
-- 🔒 JWT token-based authentication
-- 🔒 Bcrypt password hashing
-- 🔒 HTTPS ready (use in production)
-- 🔒 CORS configured
-- 🔒 Input validation on all endpoints
-- 🔒 Environment variables for secrets
-
-## 🛠️ Tech Stack
-
-**Backend**
-- Python 3.11+
-- FastAPI 0.104+
-- MongoDB (Async Motor)
-- JWT authentication
-- PyTorch/scikit-learn (for models)
-
-**Frontend**
-- Flutter 3.0+
-- Dart 3.0+
-- GoRouter (navigation)
-- Provider (state management)
-- HTTP client
-
-**Database**
-- MongoDB Atlas (cloud) or local
-
-## 📈 Future Enhancements
-
-- [ ] Real-time messaging between matches
-- [ ] Video call integration
-- [ ] Push notifications
-- [ ] Advanced AI recommendations (embeddings)
-- [ ] Daily match suggestions
-- [ ] Dark mode
-- [ ] User avatars/image gallery
-- [ ] Swipe UI (Tinder-like)
-- [ ] Analytics dashboard
-
-## 📝 API Examples
-
-### Register & Login
-```bash
-# Register
-TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "user@test.com",
-    "first_name": "John",
-    "last_name": "Doe",
-    "password": "pass123"
-  }' | jq -r '.access_token')
-
-# Login
-curl -X POST http://localhost:8000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "user@test.com", "password": "pass123"}'
-```
-
-### Complete Onboarding
-```bash
-curl -X POST http://localhost:8000/api/users/onboarding \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "age": 25,
-    "gender": "male",
-    "interests": ["music", "travel", "fitness"],
-    "responses": {
-      "1": "I love weekend hiking trips",
-      "2": "I handle conflicts with open communication",
-      "3": "I enjoy creative and thoughtful people"
-    }
-  }'
-```
-
-### Find Matches
-```bash
-curl http://localhost:8000/api/matches/find?limit=10 \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-## 📚 Documentation
-
-- **Backend API Docs**: `http://localhost:8000/docs` (Swagger UI)
-- **Backend Setup**: See `SETUP_GUIDE.md`
-- **Frontend README**: See `frontend/README.md`
-
-## 🤝 Contributing
-
-1. Create feature branch
-2. Make changes
-3. Test thoroughly
-4. Submit PR
-
-## 📄 License
-
-Part of VYNK project.
-
----
-
-## 🎬 Presentation Summary
-
-**"This is a mobile-based personality matchmaking system powered by a Python backend using NLP-based MBTI classification trained on large-scale social data. The system computes personality once and performs efficient real-time compatibility matching."**
-
----
-
-**Built with ❤️ | Let's see who you vynk with 👀**
+The backend service boundaries make it easy to replace `mbti_engine.py` with an actual ML model later, without changing API contracts or frontend flow.
