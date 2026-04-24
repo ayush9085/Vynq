@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../theme.dart';
+
 import '../services/api_service.dart';
+import '../theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,109 +11,46 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
+class _SplashScreenState extends State<SplashScreen> {
+  final _api = ApiService();
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize animation
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
-    );
-
-    // Start animation
-    _animationController.forward();
-
-    // Navigate after splash duration
-    Future.delayed(const Duration(seconds: 3), _handleNavigation);
+    _boot();
   }
 
-  Future<void> _handleNavigation() async {
+  Future<void> _boot() async {
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    final isAuthed = await _api.isAuthenticated();
     if (!mounted) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('vynk_auth_token');
-
-    if (token != null) {
-      // User is logged in, check if onboarding is completed
-      final isOnboardingDone = await ApiService.isOnboardingCompleted();
-      if (mounted) {
-        if (isOnboardingDone) {
-          context.go('/home');
-        } else {
-          context.go('/onboarding');
-        }
-      }
-    } else {
-      if (mounted) context.go('/auth/login');
-    }
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
+    context.go(isAuthed ? '/home' : '/auth/login');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: VynkColors.lavenderGradient,
-        ),
-        child: Center(
+        decoration: const BoxDecoration(gradient: VynkColors.heroGradient),
+        child: const Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Logo with animation
-              ScaleTransition(
-                scale: _scaleAnimation,
-                child: Column(
-                  children: [
-                    Text(
-                      'VYNK',
-                      style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                            color: VynkColors.primary,
-                            fontSize: 64,
-                            fontWeight: FontWeight.w700,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '👀',
-                      style: Theme.of(context).textTheme.displayMedium,
-                    ),
-                  ],
+              Text(
+                'VYNK',
+                style: TextStyle(
+                  fontSize: 54,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2,
                 ),
               ),
-              const SizedBox(height: 32),
-              // Tagline
+              SizedBox(height: 8),
               Text(
                 'Let\'s see who you vynk with',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: VynkColors.textLight,
-                    ),
+                style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 48),
-              // Loading indicator
-              const SizedBox(
-                width: 40,
-                height: 40,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation(VynkColors.primary),
-                  strokeWidth: 3,
-                ),
-              ),
+              SizedBox(height: 22),
+              CircularProgressIndicator(),
             ],
           ),
         ),
