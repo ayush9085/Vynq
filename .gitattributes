@@ -1,0 +1,28 @@
+# Exclude platform-specific generated files from GitHub language detection
+
+# iOS generated files
+frontend/ios/** linguist-generated=true
+frontend/ios/** -diff
+
+# Android generated files  
+frontend/android/** linguist-generated=true
+frontend/android/** -diff
+
+# macOS generated files
+frontend/macos/** linguist-generated=true
+frontend/macos/** -diff
+
+# Windows generated files
+frontend/windows/** linguist-generated=true
+frontend/windows/** -diff
+
+# Linux generated files
+frontend/linux/** linguist-generated=true
+frontend/linux/** -diff
+
+# Flutter build output
+frontend/build/ linguist-generated=true
+frontend/build/ -diff
+
+# Generated lock files
+frontend/pubspec.lock linguist-generated=true
