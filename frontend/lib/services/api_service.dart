@@ -34,9 +34,24 @@ class ApiService {
     return prefs.getString(_tokenKey);
   }
 
+  Future<String?> userId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userIdKey);
+  }
+
   Future<bool> isAuthenticated() async {
     return (await token()) != null;
   }
+
+  Future<Map<String, String>> _authHeaders() async {
+    final t = await token();
+    return {
+      if (t != null) 'Authorization': 'Bearer $t',
+      'Content-Type': 'application/json',
+    };
+  }
+
+  // ── Auth ──
 
   Future<AuthResponse> register({
     required String email,
@@ -87,6 +102,8 @@ class ApiService {
     return auth;
   }
 
+  // ── User ──
+
   Future<List<String>> assessmentQuestions() async {
     final response = await http.get(
       Uri.parse('$baseUrl/api/users/assessment-questions'),
@@ -107,17 +124,11 @@ class ApiService {
     required List<String> interests,
     required Map<String, String> responses,
   }) async {
-    final authToken = await token();
-    if (authToken == null) {
-      throw Exception('Please log in again');
-    }
+    final headers = await _authHeaders();
 
     final response = await http.post(
       Uri.parse('$baseUrl/api/users/onboarding'),
-      headers: {
-        'Authorization': 'Bearer $authToken',
-        'Content-Type': 'application/json',
-      },
+      headers: headers,
       body: jsonEncode({
         'age': age,
         'gender': gender,
@@ -135,13 +146,31 @@ class ApiService {
     );
   }
 
+  Future<UserProfile> myProfile() async {
+    final headers = await _authHeaders();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/users/me'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(_errorFromResponse(response));
+    }
+
+    return UserProfile.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  // ── Matches ──
+
   Future<List<MatchItem>> findMatches() async {
-    final authToken = await token();
-    if (authToken == null) throw Exception('Please log in again');
+    final headers = await _authHeaders();
 
     final response = await http.get(
       Uri.parse('$baseUrl/api/matches/find?limit=20'),
-      headers: {'Authorization': 'Bearer $authToken'},
+      headers: headers,
     );
 
     if (response.statusCode != 200) {
@@ -154,22 +183,165 @@ class ApiService {
         .toList();
   }
 
-  Future<UserProfile> myProfile() async {
-    final authToken = await token();
-    if (authToken == null) throw Exception('Please log in again');
+  // ── Chat ──
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/users/me'),
-      headers: {'Authorization': 'Bearer $authToken'},
+  Future<ChatMessage> sendMessage({
+    required String receiverId,
+    required String content,
+  }) async {
+    final headers = await _authHeaders();
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/chat/send'),
+      headers: headers,
+      body: jsonEncode({
+        'receiver_id': receiverId,
+        'content': content,
+      }),
     );
 
     if (response.statusCode != 200) {
       throw Exception(_errorFromResponse(response));
     }
 
-    return UserProfile.fromJson(
+    return ChatMessage.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
+  }
+
+  Future<List<ChatMessage>> getConversation(String otherUserId) async {
+    final headers = await _authHeaders();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/chat/conversation/$otherUserId'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(_errorFromResponse(response));
+    }
+
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Conversation>> getConversations() async {
+    final headers = await _authHeaders();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/chat/conversations'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(_errorFromResponse(response));
+    }
+
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => Conversation.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ── Icebreakers ──
+
+  Future<List<String>> getIcebreakers(String matchUserId) async {
+    final headers = await _authHeaders();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/extras/icebreakers/$matchUserId'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      return [];
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return List<String>.from(data['icebreakers'] as List);
+  }
+
+  // ── Analytics ──
+
+  Future<void> recordSwipe({
+    required String targetUserId,
+    required String action,
+  }) async {
+    final headers = await _authHeaders();
+
+    await http.post(
+      Uri.parse('$baseUrl/api/extras/swipe'),
+      headers: headers,
+      body: jsonEncode({
+        'target_user_id': targetUserId,
+        'action': action,
+      }),
+    );
+  }
+
+  Future<SwipeStats> getSwipeStats() async {
+    final headers = await _authHeaders();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/extras/analytics'),
+      headers: headers,
+    );
+
+    if (response.statusCode != 200) {
+      return SwipeStats.fromJson({});
+    }
+
+    return SwipeStats.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  // ── Report / Block ──
+
+  Future<String> reportUser({
+    required String reportedUserId,
+    required String reason,
+  }) async {
+    final headers = await _authHeaders();
+
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/extras/report'),
+      headers: headers,
+      body: jsonEncode({
+        'reported_user_id': reportedUserId,
+        'reason': reason,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(_errorFromResponse(response));
+    }
+
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return data['message'] as String;
+  }
+
+  Future<void> blockUser(String targetUserId) async {
+    final headers = await _authHeaders();
+
+    await http.post(
+      Uri.parse('$baseUrl/api/extras/block/$targetUserId'),
+      headers: headers,
+    );
+  }
+
+  // ── Compatibility Matrix ──
+
+  Future<Map<String, dynamic>> getCompatibilityMatrix() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/extras/compatibility-matrix'),
+    );
+
+    if (response.statusCode != 200) return {};
+
+    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   String _errorFromResponse(http.Response response) {

@@ -38,6 +38,10 @@ class MBTIResult(BaseModel):
     mbti: str
     confidence: float
     keyword_counts: dict[str, int]
+    axis_scores: dict[str, dict] = {}
+    type_description: str = ""
+    total_keywords_detected: int = 0
+    tokens_analyzed: int = 0
     message: str
 
 
@@ -60,6 +64,59 @@ class MatchResult(BaseModel):
     shared_interests: list[str]
     explanation: str
     reasons: list[str]
+
+
+# ── Chat ──
+
+class ChatMessageRequest(BaseModel):
+    receiver_id: str
+    content: str = Field(min_length=1, max_length=2000)
+
+
+class ChatMessageResponse(BaseModel):
+    id: str
+    sender_id: str
+    receiver_id: str
+    content: str
+    timestamp: str
+    sender_name: str = ""
+
+
+# ── Icebreakers ──
+
+class IcebreakerResponse(BaseModel):
+    icebreakers: list[str]
+    context: str = ""
+
+
+# ── Analytics ──
+
+class SwipeAction(BaseModel):
+    target_user_id: str
+    action: str = Field(pattern="^(like|pass|super)$")
+
+
+class SwipeStats(BaseModel):
+    total_swipes: int = 0
+    likes: int = 0
+    passes: int = 0
+    super_likes: int = 0
+    like_rate: float = 0.0
+    top_match_type: str = ""
+    avg_compatibility: float = 0.0
+    swipe_history: list[dict] = Field(default_factory=list)
+
+
+# ── Report ──
+
+class ReportRequest(BaseModel):
+    reported_user_id: str
+    reason: str = Field(min_length=1, max_length=500)
+
+
+class ReportResponse(BaseModel):
+    message: str
+    report_id: str
 
 
 def now_utc() -> datetime:

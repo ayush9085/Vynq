@@ -25,6 +25,10 @@ QUESTIONS = [
     AssessmentQuestion(id=2, text="How do you make decisions under pressure?"),
     AssessmentQuestion(id=3, text="What kind of people energize you most?"),
     AssessmentQuestion(id=4, text="How do you usually plan your week?"),
+    AssessmentQuestion(id=5, text="Do you prefer working in teams or independently? Why?"),
+    AssessmentQuestion(id=6, text="How do you handle conflict or disagreements?"),
+    AssessmentQuestion(id=7, text="What motivates you — logic and strategy, or values and emotions?"),
+    AssessmentQuestion(id=8, text="Do you prefer a structured routine or a flexible, spontaneous lifestyle?"),
 ]
 
 
@@ -63,6 +67,7 @@ async def onboarding(payload: OnboardingRequest, user_id: str = Depends(get_curr
             "mbti": analysis["mbti"],
             "mbti_confidence": analysis["confidence"],
             "keyword_counts": analysis["keyword_counts"],
+            "axis_scores": analysis["axis_scores"],
         }
     }
 
@@ -74,7 +79,11 @@ async def onboarding(payload: OnboardingRequest, user_id: str = Depends(get_curr
         mbti=analysis["mbti"],
         confidence=analysis["confidence"],
         keyword_counts=analysis["keyword_counts"],
-        message=f"AI Personality Analysis Complete: You are {analysis['mbti']}",
+        axis_scores=analysis["axis_scores"],
+        type_description=analysis["type_description"],
+        total_keywords_detected=analysis["total_keywords_detected"],
+        tokens_analyzed=analysis["tokens_analyzed"],
+        message=f"AI Personality Analysis Complete: You are {analysis['mbti']} — {analysis['type_description']}",
     )
 
 

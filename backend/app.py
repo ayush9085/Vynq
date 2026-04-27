@@ -10,11 +10,15 @@ if __package__:
     from .routes.auth import router as auth_router
     from .routes.match import router as match_router
     from .routes.user import router as user_router
+    from .routes.chat import router as chat_router
+    from .routes.extras import router as extras_router
 else:
     from database.connection import close_db, connect_to_db
     from routes.auth import router as auth_router
     from routes.match import router as match_router
     from routes.user import router as user_router
+    from routes.chat import router as chat_router
+    from routes.extras import router as extras_router
 
 load_dotenv()
 
@@ -61,3 +65,5 @@ async def root() -> dict:
 app.include_router(auth_router)
 app.include_router(user_router)
 app.include_router(match_router)
+app.include_router(chat_router)
+app.include_router(extras_router)
