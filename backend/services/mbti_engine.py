@@ -100,16 +100,43 @@ def analyze_personality(responses: dict[str, str]) -> dict:
     bigrams = [f"{tokens[i]} {tokens[i+1]}" for i in range(len(tokens) - 1)]
     bigram_counts = Counter(bigrams)
 
+    # Identify negation contexts (not, don't, doesn't, can't, won't, etc.)
+    negation_words = {"not", "don't", "doesn't", "didn't", "can't", "won't", "wouldn't", "couldn't", "shouldn't", "never", "no", "hardly", "rarely"}
+    negation_indices = set()
+    for i, token in enumerate(tokens):
+        if token in negation_words:
+            # Mark the next 2 words as negated
+            negation_indices.update(range(i + 1, min(i + 3, len(tokens))))
+
     trait_counts: dict[str, int] = {}
     total_keywords = 0
 
     for trait, words in MBTI_KEYWORDS.items():
         count = 0
+        # Get the opposite trait for negation handling
+        opposite_trait = None
+        for axis in AXES:
+            if trait in axis:
+                opposite_trait = axis[1] if axis[0] == trait else axis[0]
+                break
+        
         for word in words:
             if " " in word:
                 count += bigram_counts.get(word, 0)
             else:
-                count += token_counts.get(word, 0)
+                # Check if word is in negation context
+                negated = False
+                for i, token in enumerate(tokens):
+                    if token == word and i in negation_indices:
+                        negated = True
+                        break
+                
+                if negated and opposite_trait:
+                    # Negation inverts the trait
+                    continue  # Don't count for current trait
+                else:
+                    count += token_counts.get(word, 0)
+        
         trait_counts[trait] = count
         total_keywords += count
 
@@ -151,9 +178,21 @@ def analyze_personality(responses: dict[str, str]) -> dict:
         }
 
     if total_keywords == 0:
-        confidence = 0.35
+        confidence = 0.25  # Very low confidence if no keywords detected
     else:
-        confidence = sum(axis_confidences) / len(axis_confidences)
+        # Adjust confidence based on keyword saturation
+        # Assume 20+ keywords is "good" sample, 5-20 is "okay", <5 is "weak"
+        axis_avg_conf = sum(axis_confidences) / len(axis_confidences)
+        
+        if total_keywords < 5:
+            # Very weak signal - cap confidence at 40%
+            confidence = min(axis_avg_conf * 0.5, 0.40)
+        elif total_keywords < 15:
+            # Moderate signal - cap at 65%
+            confidence = min(axis_avg_conf * 0.75, 0.65)
+        else:
+            # Strong signal - allow full confidence
+            confidence = axis_avg_conf
 
     mbti = "".join(mbti_chars)
     type_desc = MBTI_TYPE_DESCRIPTIONS.get(mbti, f"Personality type {mbti}")
