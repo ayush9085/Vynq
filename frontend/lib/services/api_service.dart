@@ -345,6 +345,10 @@ class ApiService {
   }
 
   String _errorFromResponse(http.Response response) {
+    if (response.statusCode == 401) {
+      logout();
+      return 'Session expired. Please log in again.';
+    }
     try {
       final body = jsonDecode(response.body) as Map<String, dynamic>;
       return body['detail']?.toString() ?? 'Request failed';

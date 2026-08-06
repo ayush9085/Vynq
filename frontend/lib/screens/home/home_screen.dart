@@ -148,6 +148,54 @@ class HomeScreen extends StatelessWidget {
 
                 // Daily missions
                 _buildDailyMissions(),
+                const SizedBox(height: 20),
+
+                // MBTI Chemistry Banner
+                GestureDetector(
+                  onTap: () => context.push('/calculator'),
+                  child: Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: VynkColors.card,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: VynkColors.accent.withValues(alpha: 0.4)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: VynkColors.heroGradient,
+                          ),
+                          child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'MBTI Chemistry Calculator',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Test chemistry between any two personality types!',
+                                style: TextStyle(color: VynkColors.textSecondary, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(Icons.arrow_forward_ios_rounded, color: VynkColors.accentLight, size: 16),
+                      ],
+                    ),
+                  ),
+                ).animate().fadeIn(delay: 300.ms),
                 const SizedBox(height: 24),
 
                 // Moments section

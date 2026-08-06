@@ -19,7 +19,7 @@ async def connect_to_db() -> None:
         _db = _client[MONGODB_DB]
         
         # Verify connection
-        await _db.admin.command('ping')
+        await _client.admin.command('ping')
         
         # Create indexes
         await _db.users.create_index("email", unique=True)

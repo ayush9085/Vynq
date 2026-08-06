@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'models/api_models.dart';
 import 'screens/analytics/analytics_screen.dart';
 import 'screens/auth/login_screen.dart';
+import 'screens/calculator/chemistry_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/chat/chat_list_screen.dart';
 import 'screens/chat/chat_screen.dart';
@@ -19,6 +22,18 @@ import 'screens/splash_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
+  redirect: (context, state) async {
+    final location = state.matchedLocation;
+    if (location == '/' || location.startsWith('/auth')) {
+      return null;
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('vynk_token');
+    if (token == null || token.isEmpty) {
+      return '/auth/login';
+    }
+    return null;
+  },
   routes: [
     GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
     GoRoute(
@@ -122,6 +137,11 @@ final router = GoRouter(
     GoRoute(
       path: '/analytics',
       builder: (context, state) => const AnalyticsDashboardScreen(),
+    ),
+    // MBTI Chemistry Calculator
+    GoRoute(
+      path: '/calculator',
+      builder: (context, state) => const ChemistryScreen(),
     ),
   ],
 );

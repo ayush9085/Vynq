@@ -364,6 +364,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 20),
 
+              // MBTI Chemistry Calculator Button
+              GestureDetector(
+                onTap: () => context.push('/calculator'),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: VynkColors.heroGradient,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: VynkColors.primaryGlow(opacity: 0.3),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.bolt_rounded, color: Colors.white, size: 24),
+                      SizedBox(width: 10),
+                      Text(
+                        'MBTI Chemistry Calculator',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(width: 6),
+                      Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
               // Action buttons
               Row(
                 children: [
