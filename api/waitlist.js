@@ -89,29 +89,111 @@ export default async function handler(req, res) {
   // 2. Send Confirmation Email via Resend SDK directly to user
   if (RESEND_API_KEY && resend) {
     try {
-      // First attempt: Send directly to the registering user's email
+      // Send directly to the registering user's email
       let response = await resend.emails.send({
         from: RESEND_FROM,
         to: [email],
-        subject: `Welcome to Vynk Early Access, ${firstName || 'friend'}! 😉`,
+        subject: `Welcome to Vynk Early Access, ${firstName || 'friend'}! ✨`,
         html: `
-          <div style="background-color: #0D0D0D; color: #FFFFFF; font-family: sans-serif; padding: 40px 20px; text-align: center;">
-            <div style="max-width: 500px; margin: 0 auto; background-color: #16162A; border: 1px solid #252542; border-radius: 24px; padding: 32px;">
-              <h1 style="color: #FF4D67; font-size: 32px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px;">VYNK;</h1>
-              <p style="color: #A78BFA; font-size: 14px; font-weight: 700; text-transform: uppercase; tracking: 2px;">Personality-First Dating</p>
-              <hr style="border: 0; border-top: 1px solid #252542; margin: 24px 0;" />
-              <h2 style="color: #FFFFFF; font-size: 24px; font-weight: 800; margin-bottom: 12px;">${greeting.toUpperCase()}YOU'RE ON THE LIST. 😉</h2>
-              <p style="color: #9CA3AF; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
-                Thanks for joining the Vynk early access queue! We're building personality-first dating for people who want more than a 2-second swipe.
-              </p>
-              <div style="background-color: #1A1A2E; border: 1px solid #252542; border-radius: 16px; padding: 16px; color: #FF4D67; font-weight: 700; font-size: 14px;">
-                Spot Reserved for: ${fullName ? `${fullName} (${email})` : email}
-              </div>
-              <p style="color: #6B7280; font-size: 12px; margin-top: 24px;">
-                We'll send your exclusive invite code prior to launch. No spam. Just a little wink.
-              </p>
-            </div>
-          </div>
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          </head>
+          <body style="margin: 0; padding: 0; background-color: #07070C; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #E2E8F0;">
+            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #07070C; padding: 40px 16px;">
+              <tr>
+                <td align="center">
+                  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 520px; background: linear-gradient(180deg, #131322 0%, #0D0D18 100%); border: 1px solid #232338; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+                    
+                    <!-- Top Accent Bar -->
+                    <tr>
+                      <td style="height: 4px; background: linear-gradient(90deg, #FF4D67 0%, #A78BFA 50%, #EC4899 100%);"></td>
+                    </tr>
+
+                    <!-- Header -->
+                    <tr>
+                      <td style="padding: 40px 32px 24px 32px; text-align: center;">
+                        <h1 style="margin: 0; font-size: 34px; font-weight: 900; letter-spacing: -1.5px; color: #FF4D67; display: inline-block;">
+                          VYNK<span style="color: #A78BFA;">.</span>
+                        </h1>
+                        <p style="margin: 6px 0 0 0; color: #94A3B8; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">
+                          Personality-First Dating
+                        </p>
+                      </td>
+                    </tr>
+
+                    <!-- Divider -->
+                    <tr>
+                      <td style="padding: 0 32px;">
+                        <div style="height: 1px; background: linear-gradient(90deg, transparent, #2E2E48, transparent);"></div>
+                      </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                      <td style="padding: 32px; text-align: left;">
+                        <h2 style="margin: 0 0 16px 0; color: #FFFFFF; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">
+                          ${greeting}You're officially on the list! ✨
+                        </h2>
+                        
+                        <p style="margin: 0 0 20px 0; color: #94A3B8; font-size: 15px; line-height: 1.6;">
+                          Thanks for joining the early access queue. We're rethinking campus dating from the ground up — ditching shallow 2-second swipes for deep compatibility, MBTI insights, and genuine vibe matches.
+                        </p>
+
+                        <!-- Reservation Card -->
+                        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background: rgba(255, 77, 103, 0.05); border: 1px solid rgba(255, 77, 103, 0.2); border-radius: 16px; margin: 24px 0;">
+                          <tr>
+                            <td style="padding: 20px; text-align: left;">
+                              <div style="color: #A78BFA; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">
+                                VIP Early Access Spot Reserved
+                              </div>
+                              <div style="color: #FFFFFF; font-size: 15px; font-weight: 600; word-break: break-all;">
+                                ${fullName ? `${fullName} (${email})` : email}
+                              </div>
+                              <div style="color: #10B981; font-size: 12px; font-weight: 600; margin-top: 8px;">
+                                &#10003; Status: Priority Access Confirmed
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+
+                        <p style="margin: 0 0 28px 0; color: #94A3B8; font-size: 14px; line-height: 1.6;">
+                          We'll reach out directly with your exclusive invite code prior to launch. Keep an eye on your inbox!
+                        </p>
+
+                        <!-- CTA Button -->
+                        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td align="center">
+                              <a href="https://vynk.space" target="_blank" style="display: inline-block; background: linear-gradient(135deg, #FF4D67 0%, #E11D48 100%); color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700; padding: 14px 32px; border-radius: 99px; box-shadow: 0 4px 20px rgba(255, 77, 103, 0.4);">
+                                Visit vynk.space &rarr;
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                      <td style="padding: 24px 32px 32px 32px; background-color: #0A0A12; text-align: center; border-top: 1px solid #1C1C2E;">
+                        <p style="margin: 0 0 8px 0; color: #64748B; font-size: 12px;">
+                          You received this because you signed up for early access at <a href="https://vynk.space" style="color: #A78BFA; text-decoration: none;">vynk.space</a>
+                        </p>
+                        <p style="margin: 0; color: #475569; font-size: 11px;">
+                          &copy; 2026 Vynk. All rights reserved. &bull; Personality-First Dating
+                        </p>
+                      </td>
+                    </tr>
+
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+          </html>
         `
       });
 
