@@ -1,13 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
   <defs>
     <linearGradient id="vynk-grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FF4D67" />
+      <stop offset="50%" stop-color="#C084FC" />
       <stop offset="100%" stop-color="#7C3AED" />
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="28" fill="#0D0D0D"/>
-  <rect width="98" height="98" x="1" y="1" rx="27" fill="#16162A" fill-opacity="0.6" stroke="url(#vynk-grad)" stroke-width="2"/>
-  <!-- Wink / V Heart shape -->
-  <path d="M25 32L50 72L75 32" stroke="url(#vynk-grad)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="68" cy="35" r="5" fill="#FF4D67"/>
+  <!-- Background Container Squircle -->
+  <rect width="512" height="512" rx="144" fill="#0D0D0D"/>
+  <rect width="500" height="500" x="6" y="6" rx="138" fill="#16162A" stroke="url(#vynk-grad)" stroke-width="6" stroke-opacity="0.4"/>
+  
+  <!-- Official Vynk Brand Smile / Wink Curve -->
+  <path d="M 112 210 Q 256 365 400 210 C 330 305 182 305 112 210 Z" fill="url(#vynk-grad)" />
 </svg>
