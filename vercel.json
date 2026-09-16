@@ -3,8 +3,9 @@
   "outputDirectory": "landing/dist",
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }
   ]
 }
+
