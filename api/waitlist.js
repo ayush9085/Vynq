@@ -58,9 +58,21 @@ export default async function handler(req, res) {
 
   // 1. Insert into Supabase Waitlist Table
   try {
-    const { data, error } = await supabase
+    let insertPayload = { email, campus_domain: domain, status: 'pending' };
+    if (fullName) {
+      insertPayload.name = fullName;
+    }
+
+    let { data, error } = await supabase
       .from('waitlist')
-      .insert([{ email, name: fullName, campus_domain: domain, status: 'pending' }]);
+      .insert([insertPayload]);
+
+    if (error && (error.message?.includes('column "name"') || error.code === 'PGRST204')) {
+      // Retry without name column if schema has not added name column yet
+      delete insertPayload.name;
+      const retry = await supabase.from('waitlist').insert([insertPayload]);
+      error = retry.error;
+    }
 
     if (!error) {
       dbSuccess = true;
