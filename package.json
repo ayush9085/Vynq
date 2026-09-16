@@ -1,0 +1,10 @@
+{
+  "name": "vynk-root",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.116.0",
+    "resend": "^6.28.1"
+  }
+}
