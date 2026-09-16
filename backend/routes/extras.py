@@ -239,3 +239,36 @@ async def top_matches(mbti_type: str, top_n: int = 5):
     """Get top N most compatible types for a given MBTI type."""
     matches = get_top_matches_for_type(mbti_type, top_n)
     return [{"type": t, "score": s} for t, s in matches]
+
+
+# ── Supabase Waitlist Endpoints ──
+
+@router.post("/waitlist")
+async def add_to_waitlist(payload: dict):
+    """Add a student email to the Supabase waitlist."""
+    email = payload.get("email")
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="Invalid email address")
+    
+    campus_domain = payload.get("campus_domain") or email.split("@")[1]
+    
+    if __package__ and __package__.startswith("backend"):
+        from ..database.supabase_client import insert_waitlist_entry
+    else:
+        from database.supabase_client import insert_waitlist_entry
+        
+    res = await insert_waitlist_entry(email, campus_domain)
+    return res
+
+
+@router.get("/waitlist/count")
+async def waitlist_count():
+    """Get total count of waitlist signups."""
+    if __package__ and __package__.startswith("backend"):
+        from ..database.supabase_client import fetch_waitlist_count
+    else:
+        from database.supabase_client import fetch_waitlist_count
+        
+    count = await fetch_waitlist_count()
+    return {"count": count}
+
