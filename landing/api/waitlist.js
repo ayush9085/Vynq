@@ -115,6 +115,7 @@ export default async function handler(req, res) {
                     <!-- Header -->
                     <tr>
                       <td style="padding: 40px 32px 24px 32px; text-align: center;">
+                        <img src="https://vynk.space/vynk_icon_grad.png" alt="Vynk Logo" width="64" height="64" style="display: block; margin: 0 auto 16px auto; border-radius: 16px; box-shadow: 0 8px 24px rgba(255, 77, 103, 0.3);" />
                         <h1 style="margin: 0; font-size: 34px; font-weight: 900; letter-spacing: -1.5px; color: #FF4D67; display: inline-block;">
                           VYNK<span style="color: #A78BFA;">.</span>
                         </h1>
